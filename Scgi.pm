@@ -13,7 +13,7 @@ require Exporter;
 	html_head_body
 	obs_register obs_delete send_obs_dat 
 	sse_header sse_dat sse_json
-	cgi_controller00
+	cgi_rt00
 );
 use CGI::Pretty ':standard';
 	$CGI::Pretty::INDENT = "  ";
@@ -401,7 +401,7 @@ sub cgi_rt00 {
 	# put out the initial HTML, and can also put a little router in there to 
 	# further parse the CGI parameters it gets
 	if ($cgi->{request_method} eq 'GET') {
-		main::view();
+		print main::view($cgi);
 	} 
 	# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	# POST
@@ -417,7 +417,7 @@ sub cgi_rt00 {
 	# a debug entrance where user is calling by command line 
 	# default action: print the "view" to the 
 	elsif ($cgi->{request_method} eq 'cli') {
-		view();
+		print main::view($cgi);
 	}
 }
 

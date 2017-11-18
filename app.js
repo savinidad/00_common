@@ -9,7 +9,7 @@
 //  sub is the string name of PERL sub which gets args as a hash
 function ajax_sub_args(sub, args) {
 	$.ajax({
-		url: "notes.cgi", 
+		url: "app.cgi", 
 		type: "POST",
 		data: {
 			sub: sub,

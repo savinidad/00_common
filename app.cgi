@@ -27,21 +27,6 @@ print "this is a html5/cgi play-space I've started at <br>
 ~/Sites/00_common/app.cgi\n"; 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# cgi: this is done on the server side
-# put out a simple text box and submit button
-print
-	"<hr>\n",
-	start_form(),
-	# a submit button
-	submit('Action','test_submit'),
-	# text field with leading label
-	" touched within ", 
-	textfield(-name => 'test_text', -size => 3, -default => "pica"),
-	end_form,
-	"<hr>\n",
-;
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # cgi
 # do a simple calculate on the input
 if (defined param(test_text)) {
