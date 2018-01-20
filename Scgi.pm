@@ -9,11 +9,10 @@ require Exporter;
 	div header p pre a input textfield password_field button table Tr th td
 	h3 br
 	p_red button00 
-	cgi_parse view_if_login_cgi
 	html_head_body
 	obs_register obs_delete send_obs_dat 
 	sse_header sse_dat sse_json
-	cgi_rt00
+	cgi_rt00 cgi_rt01
 );
 use CGI::Pretty ':standard';
 	$CGI::Pretty::INDENT = "  ";
@@ -21,6 +20,7 @@ use CGI::Cookie;
 use JSON;
 use Sutil;
 use Data::Dumper;
+our $verbosity = 5;
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 # 2014-05-12
@@ -143,17 +143,21 @@ sub html_head_body {
 		-title => $args->{title},
 		-encoding => "utf-8",
 		# meta tag to ensure proper rendering and touch zooming
+		# from W3schools:
+		# <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		-meta => { 
-			viewport => 
-				"user-scalable=no,width=device-width,initial-scale=1.0", 
+			viewport =>
+			"width=device-width,initial-scale=2.0,user-scalable=no", 
 			content => "text/html",
 		},
 		-style => [
-			(@{$args->{style}}),
+			{src => '../00_common/app.css'},
+			@{$args->{style}},
 		],
 		-script => [
 			{src => "http://code.jquery.com/jquery-1.11.3.min.js"},
-			(@{$args->{script}}),
+			{src => '../00_common/Sapp.js'},
+			@{$args->{script}},
 		],
 	),
 	@_,	# @_ is the whole page
@@ -200,6 +204,7 @@ sub cgi_parse {
 	else {
 		$cgi->{server_addr} = '45.28.143.191:8864';
 	}
+	note "cgi_parse:".$cgi->{server_addr} if ($verbosity >= 5);
 	# http request
 	if (request_method() =~ /POST|GET/) {
 		$cgi->{request_method} = request_method();
@@ -220,7 +225,7 @@ sub cgi_parse {
 		$cgi->{request_method} = 'cli';
 		$cgi->{params} = hash_str_arr(@ARGV);
 	}
-	#note "$0  cgi_parse"; note (Dumper $cgi);
+	note "$0  cgi_parse"; note (Dumper $cgi);
 	note sprintf("%s %s %s", $0, "cgi_parse", $cgi->{request_method});
 	return $cgi;
 }
@@ -333,7 +338,7 @@ sub execute_and_respond_cgi {
 		(defined &{"main::$sub"})
 	) {
 		$args = decode_json $cgi->{params}{args};
-		$ret = &{"main::$sub"}($args);
+		$ret = &{"main::$sub"}($args, $cgi);
 	}
 	print 
 		header(
@@ -380,6 +385,7 @@ sub redirect {
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# 2017-12-28 deprecated
 # my most basic controller
 sub cgi_controller00 {
 	my ($cgi) = @_;
@@ -392,16 +398,17 @@ sub cgi_controller00 {
 	}
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# my CGI router
+# my CGI routers
+our $cgi;
 sub cgi_rt00 {
-	my ($cgi) = cgi_parse();
+	$cgi = cgi_parse();
 	# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	# GET
 	# assume the user wants to get started, script can use the sub "view" to 
 	# put out the initial HTML, and can also put a little router in there to 
 	# further parse the CGI parameters it gets
 	if ($cgi->{request_method} eq 'GET') {
-		print main::view($cgi);
+		view_if_login_cgi($cgi);
 	} 
 	# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	# POST
@@ -419,6 +426,11 @@ sub cgi_rt00 {
 	elsif ($cgi->{request_method} eq 'cli') {
 		print main::view($cgi);
 	}
+}
+# a router for eventsource objects
+sub cgi_rt01 {
+	note("cgi_rt01");
+	$cgi = cgi_parse();
 }
 
 "bye dad";

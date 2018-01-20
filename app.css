@@ -1,4 +1,14 @@
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/* general */
+p {
+	font-family: sans-serif;
+}
+
+#div_debug {
+	border: 1px solid black;
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* fundamental table */
 table {
 	border-collapse: collapse;
@@ -16,7 +26,7 @@ thead td {
 	border-color: white;
 }
 
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* snazzy table */
 table.t00 td {
 	border: 10px solid #808080;

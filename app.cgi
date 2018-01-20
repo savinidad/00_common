@@ -8,30 +8,83 @@ BEGIN {
 	use Scgi;
 	use Sutil;
 }
-
 # turn on basic cgi; also puts methods in "main" space
-use CGI::Pretty ':standard';
-	$CGI::Pretty::INDENT = "  ";
-use CGI::Carp qw(fatalsToBrowser);	# helps with debug!
+#use CGI::Pretty ':standard';
+	#$CGI::Pretty::INDENT = "  ";
+#use CGI::Carp qw(fatalsToBrowser);	# helps with debug!
 
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# Model
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# called when date button is pressed
+sub up_date {
+	{function => 'up_date', args => {date => date_x()}};
+}
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# View
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+sub view {
+	my ($cgi) = @_;
+	# returns a page of html, ready to go
+	html_head_body(
+		$cgi,
+		# elements of html head
+		{
+			title => 'app_test', 
+			# an array of CSS references or strings
+			style => [
+				{src => 'app.css'},
+				{code => '
+					h3 {
+						font-family: sans-serif;
+					}
+				'},
+			],
+			# an array of javascript references or strings
+			script => [
+				{src => 'app.js'},
+			],
+		},
+		# a few ways to write the html part
+		h3('hi dad'),
+		'<h3>yo dude</h3>',
+		div_local_server_time(),
+		div_cgi($cgi),
+	);
+}
+
+# build a simple div
+sub div_cgi {
+	my ($cgi) = @_;
+	use Data::Dumper;
+	div(
+		pre(
+			Dumper $cgi,
+		),
+	),
+}
+
+# offer a little button to show browser and server calls
+sub div_local_server_time {
+	div(
+		{ style => '
+				color:red;
+				background-color:#20FFFF;
+				width:20em;
+				height:100px;
+		'},
+		button00('date'),	# inserts a button, defines _btn_onclick()
+		p({id => 'server_date'}, date_x()),
+	),
+}
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 # main
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-my $q = CGI->new();
+cgi_rt00();
 
-print $q->header();
-print $q->start_html('dad home cgi');
-print "plain text hello out there<br><br>\n";
-print "this is a html5/cgi play-space I've started at <br>
-~/Sites/00_common/app.cgi\n"; 
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# cgi
-# do a simple calculate on the input
-if (defined param(test_text)) {
-	printf "found %s in the box<br>\n", param(test_text);
-}
+__DATA__
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # javascript
@@ -56,21 +109,6 @@ ctx.fillStyle='#FF0000';
 ctx.fillRect(0,0,80,100);
 </script>
 END
-
-print "<hr>\nsome javascript goodies<br>\n";
-print '<button type="button" onclick="textToCanvas()">hi on canvas</button>';
-
-
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# play around with some html5
-print "<hr>\n";
-
-
-print $q->end_html();
-
-__DATA__
-
 
 #!/usr/local/bin/perl
 ##!/volume/perl/5.8.8/bin/perl
